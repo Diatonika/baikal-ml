@@ -135,4 +135,5 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib", "--tb=short"]
+pythonpath = ["src"]
 testpaths = ["tests"]
