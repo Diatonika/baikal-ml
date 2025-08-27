@@ -4,23 +4,43 @@ requires = ["poetry-core"]
 
 [project]
 authors = [{ name = "Valery Ratsko", email = "<zitrasa@yandex.ru>" }]
-description = "Baikal Template Repository"
-name = "baikal-template"
+description = "Baikal ML Repository"
+name = "baikal-ml"
 version = "0.0.0"
 readme = "README.md"
 requires-python = ">= 3.12, < 4.0"
 
 dependencies = [
+    "attrs (>= 25.0, < 26.0)",
+    "baikal-common (>= 0.16, < 1.0)",
     "dynaconf (>= 3.0, < 4.0)",
+    "numpy (>= 2.0, < 3.0)",
+    "polars (>= 1.0, < 2.0)",
+    "pyarrow (>= 20.0, < 21.0)",
 ]
 
+[project.optional-dependencies]
+cpu = ["torch (>= 2.0, < 3.0)"]
+cuda-12-8 = ["torch (>= 2.0, < 3.0)"]
+cuda-12-9 = ["torch (>= 2.0, < 3.0)"]
+
 [tool.poetry]
+package-mode = false
+
 exclude = [
     "src/baikal/*.py"  # Explicitly exclude all python files from baikal namespace package
 ]
 
 packages = [
     { include = "baikal", from = "src" }
+]
+
+[tool.poetry.dependencies]
+baikal-common = { source = "baikal-pypi" }
+torch = [
+    { source = "pytorch-cpu", markers = "extra == 'cpu' and extra != 'cuda-12-8' and extra != 'cuda-12-9'" },
+    { source = "pytorch-cuda-12-8", markers = "extra != 'cpu' and extra == 'cuda-12-8' and extra != 'cuda-12-9'" },
+    { source = "pytorch-cuda-12-9", markers = "extra != 'cpu' and extra != 'cuda-12-8' and extra == 'cuda-12-9'" }
 ]
 
 # Semantic Release Settings
@@ -48,6 +68,23 @@ name = "baikal-pypi"
 priority = "explicit"
 url = "https://pypi.fury.io/zitrasa/"
 
+# Torch Wheels Sources
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[[tool.poetry.source]]
+name = "pytorch-cuda-12-8"
+url = "https://download.pytorch.org/whl/cu128"
+priority = "explicit"
+
+[[tool.poetry.source]]
+name = "pytorch-cuda-12-9"
+url = "https://download.pytorch.org/whl/cu129"
+priority = "explicit"
+
 # Dependency Groups
 
 [tool.poetry.group.dev.dependencies]
@@ -58,6 +95,8 @@ rust-just = "^1.0"
 [tool.poetry.group.lint.dependencies]
 mypy = "^1.0"
 ruff = "^0.9"
+
+pyarrow-stubs = "^20.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0"
@@ -74,13 +113,13 @@ select = [
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-known-first-party = ["baikal.*"]
+known-first-party = ["baikal.*", "tests.*"]
 lines-between-types = 1
 
 [tool.mypy]
 exclude = [".venv"]
 explicit_package_bases = true
-mypy_path = "src"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 python_version = "3.12"
 strict = true
 
@@ -88,8 +127,13 @@ strict = true
 module = "dynaconf"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["torch.utils.*"]
+ignore_missing_imports = true
+
 # Testing Tools
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib", "--tb=short"]
+pythonpath = ["src"]
 testpaths = ["tests"]

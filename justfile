@@ -13,23 +13,17 @@ default:
 [group("setup")]
 init *install-options: && (install install-options)
     poetry config virtualenvs.in-project true --local
+    poetry config installer.re-resolve false --local
     poetry config http-basic.baikal-pypi {{ nexus-read-user }} {{ nexus-read-pass }} --local
 
 [group("setup")]
-init-dev: init
+init-dev: (init "--extras" "cpu")
 
 [group("setup")]
-init-lint: (init "--only" "main,lint,test")
+init-lint: (init "--only" "main,lint,test" "--extras" "cpu")
 
 [group("setup")]
-init-release: (init "--only" "main")
-
-[group("setup")]
-init-test: (init "--only" "main,test")
-
-[group("setup")]
-build: init-release
-    poetry build
+init-test: (init "--only" "main,test" "--extras" "cpu")
 
 [group("misc")]
 install *options:
