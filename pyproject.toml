@@ -11,8 +11,12 @@ readme = "README.md"
 requires-python = ">= 3.12, < 4.0"
 
 dependencies = [
-    "baikal-common (>= 0.15, < 1.0)",
+    "attrs (>= 25.0, < 26.0)",
+    "baikal-common (>= 0.16, < 1.0)",
     "dynaconf (>= 3.0, < 4.0)",
+    "numpy (>= 2.0, < 3.0)",
+    "polars (>= 1.0, < 2.0)",
+    "pyarrow (>= 20.0, < 21.0)",
 ]
 
 [project.optional-dependencies]
@@ -92,6 +96,8 @@ rust-just = "^1.0"
 mypy = "^1.0"
 ruff = "^0.9"
 
+pyarrow-stubs = "^20.0"
+
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0"
 pytest-datadir = "^1.0"
@@ -107,18 +113,22 @@ select = [
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-known-first-party = ["baikal.*"]
+known-first-party = ["baikal.*", "tests.*"]
 lines-between-types = 1
 
 [tool.mypy]
 exclude = [".venv"]
 explicit_package_bases = true
-mypy_path = "src"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 python_version = "3.12"
 strict = true
 
 [[tool.mypy.overrides]]
 module = "dynaconf"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["torch.utils.*"]
 ignore_missing_imports = true
 
 # Testing Tools
