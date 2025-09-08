@@ -3,7 +3,7 @@ set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
 
 # Directories for Linter & Formatter
 
-source-dirs := "src tests"
+source-dirs := "src tests notebooks"
 nexus-read-user := env("NEXUS_READ_USER")
 nexus-read-pass := env("NEXUS_READ_PASS")
 
@@ -53,3 +53,7 @@ format-fix: init-lint
 [group("test")]
 test-all: init-test
     poetry run pytest
+
+[group("notebooks")]
+run-jupyter: init-dev
+    jupyter notebook
