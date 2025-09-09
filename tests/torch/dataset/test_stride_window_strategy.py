@@ -137,3 +137,29 @@ def test_stride_window_strategy_stride_with_gap() -> None:
 
     mapping = [strategy.window(index) for index in range(strategy.length())]
     assert mapping == [0, 13, 18]
+
+
+def test_stride_window_strategy_boundaries() -> None:
+    date_time_series = date_range(
+        date(2020, 1, 1),
+        date(2020, 1, 31),
+        "1d",
+        closed="both",
+        eager=True,
+    ).alias("date_time")
+
+    dataset = DataFrame([date_time_series])
+
+    strategy = StrideWindowStrategy(
+        dataset.rechunk().to_arrow(),
+        "date_time",
+        frequency="1d",
+        feature_window=5,
+        target_window=5,
+        stride=1,
+        start=date(2020, 1, 3),
+        end=date(2020, 1, 25),
+    )
+
+    mapping = [strategy.window(index) for index in range(strategy.length())]
+    assert mapping == [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
