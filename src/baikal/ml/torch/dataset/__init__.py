@@ -1,4 +1,4 @@
-from baikal.ml.torch.dataset.arrow_torch_dataset import (
+from baikal.ml.torch.dataset.arrow_time_series_dataset import (
     ArrowTimeSeriesDataset,
     ArrowTimeSeriesSample,
 )
