@@ -1,6 +1,9 @@
 set dotenv-load := true
 set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
 
+# torch-type: cpu | cuda-12-8 | cuda-12-9
+torch-type := env("POETRY_TORCH_TYPE", "cpu")
+
 # Directories for Linter & Formatter
 
 source-dirs := "src tests notebooks"
@@ -17,17 +20,21 @@ init *install-options: && (install install-options)
     poetry config http-basic.baikal-pypi {{ nexus-read-user }} {{ nexus-read-pass }} --local
 
 [group("setup")]
-init-dev: (init "--extras" "cpu")
+init-dev: init
 
 [group("setup")]
-init-lint: (init "--only" "main,lint,test" "--extras" "cpu")
+init-lint: (init "--only" "main,lint,test")
 
 [group("setup")]
-init-test: (init "--only" "main,test" "--extras" "cpu")
+init-test: (init "--only" "main,test")
 
 [group("misc")]
 install *options:
-    poetry install {{ options }}
+    poetry install -E {{ torch-type }} {{ options }}
+
+[group("misc")]
+sync *options:
+    poetry sync -E {{ torch-type }} {{ options }}
 
 [group("misc")]
 update *options:
