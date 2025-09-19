@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from typing import cast
 
 from polars import (
@@ -29,6 +29,8 @@ class StrideWindowStrategy(WindowStrategy):
         feature_window: int,
         target_window: int,
         stride: int,
+        start: datetime | date | None = None,
+        end: datetime | date | None = None,
     ) -> None:
         self._window_mapping = StrideWindowStrategy._build_window_mapping(
             dataset,
@@ -37,6 +39,8 @@ class StrideWindowStrategy(WindowStrategy):
             feature_window=feature_window,
             target_window=target_window,
             stride=stride,
+            start=start,
+            end=end,
         )
 
     def length(self) -> int:
@@ -56,6 +60,8 @@ class StrideWindowStrategy(WindowStrategy):
         feature_window: int,
         target_window: int,
         stride: int,
+        start: datetime | date | None = None,
+        end: datetime | date | None = None,
     ) -> DataFrame:
         time_series_frame = cast(
             DataFrame, from_arrow(dataset.select([date_time_column]), rechunk=False)
@@ -69,11 +75,25 @@ class StrideWindowStrategy(WindowStrategy):
         else:
             window_duration = lit(frequency, dtype=Duration) * window_length
 
-        return (
+        lazy_time_series_frame = (
             time_series_frame.set_sorted(date_time_column)
             .lazy()
-            .select(
-                int_range(polar_len()).alias("index"),
+            .with_columns(int_range(polar_len()).alias("index"))
+        )
+
+        if start is not None:
+            lazy_time_series_frame = lazy_time_series_frame.filter(
+                col(date_time_column) >= start
+            )
+
+        if end is not None:
+            lazy_time_series_frame = lazy_time_series_frame.filter(
+                col(date_time_column) < end
+            )
+
+        return (
+            lazy_time_series_frame.select(
+                "index",
                 col(date_time_column).alias("start"),
                 col(date_time_column).add(window_duration).alias("end"),
                 col(date_time_column).shift(-window_length).alias("__shift__"),
