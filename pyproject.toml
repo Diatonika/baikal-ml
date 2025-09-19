@@ -96,6 +96,7 @@ ipympl = "^0.9"
 ipywidgets = "^8.0"
 matplotlib = "^3.0"
 notebook = "^7.0"
+rich = { version = "^13.0", extras = ["jupyter"] }
 
 [tool.poetry.group.lint.dependencies]
 mypy = "^1.0"
