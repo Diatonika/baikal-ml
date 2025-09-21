@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.3.0 (2025-09-21)
+
+### Features
+
+- **torch**: Fill n-linear notebook with additional forecast analysis
+  ([#3](https://github.com/Diatonika/baikal-ml/pull/3),
+  [`ed01a34`](https://github.com/Diatonika/baikal-ml/commit/ed01a34f4cb125a3d2200cb9c60e2f8a8eb3da65))
+
+
 ## v0.2.0 (2025-09-19)
 
 ### Features
