@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.4.0 (2025-09-23)
+
+### Features
+
+- **torch**: Ensure that n-nlinear models are correct using mock dataset
+  ([#5](https://github.com/Diatonika/baikal-ml/pull/5),
+  [`8777143`](https://github.com/Diatonika/baikal-ml/commit/877714336300ae6b90b52b00051401dd149a91b7))
+
+
 ## v0.3.0 (2025-09-21)
 
 ### Features
